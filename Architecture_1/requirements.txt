@@ -1,0 +1,6 @@
+Flask
+Werkzeug
+functions-framework
+gunicorn
+numpy
+pandas

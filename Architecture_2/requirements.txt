@@ -1,0 +1,8 @@
+Flask
+Werkzeug
+functions-framework
+gunicorn
+pandas
+google-cloud-storage
+numpy==1.23.5
+scikit-surprise
