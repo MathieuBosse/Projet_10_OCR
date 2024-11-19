@@ -1,0 +1,7 @@
+numpy
+pandas
+matplotlib
+progressbar2
+scikit-surprise
+scikit-learn
+pickle-mixin
