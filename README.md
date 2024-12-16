@@ -66,18 +66,7 @@ L'interface utilisateur est simple et intuitive, développée avec Streamlit pou
    cd Projet_10_OCR
    ```
 
-2. Configurez un environnement virtuel :
-   ```bash
-   python -m venv env
-   source env/bin/activate  # Sur Windows : env\Scripts\activate
-   ```
-
-3. Installez les dépendances :
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. Configurez votre environnement Google Cloud :
+2. Configurez votre environnement Google Cloud :
 
    - Authentifiez-vous :
      ```bash
@@ -90,21 +79,9 @@ L'interface utilisateur est simple et intuitive, développée avec Streamlit pou
      ```
 ---
 
-## Utilisation
+## Déploiement de la Google Cloud Function
 
-### Exécution locale de l'application Streamlit
-
-1. Lancer l'application Streamlit :
-   ```bash
-   streamlit run app.py
-   ```
-   Ouvrez votre navigateur à l'URL affichée (généralement http://localhost:8501).
-
-2. Saisissez un ID utilisateur dans le champ prévu et cliquez sur "Obtenir des recommandations".
-
-### Déploiement de la Google Cloud Function
-
-#### Activer les API nécessaires 
+### Activer les API nécessaires 
 
 ```bash
 gcloud services enable cloudfunctions.googleapis.com
@@ -112,7 +89,7 @@ gcloud services enable artifactregistry.googleapis.com
 gcloud services enable run.googleapis.com cloudbuild.googleapis.com
 ```
 
-#### Déploiement pour la Première Architecture  
+### Déploiement pour la Première Architecture  
 Les recommandations sont pré-calculées et stockées dans Google Cloud Storage.  
 Une Google Cloud Function récupère ces données à la demande et les renvoie à l'application Streamlit via HTTP.  
 Voir la description complète.
@@ -137,7 +114,7 @@ Utilisez l'URL générée pour interagir avec l'API.
 - Le script `function_ocr` doit être adapté pour récupérer les données pré-calculées stockées dans Google Cloud Storage.
 
 
-#### Déploiement pour la Deuxième Architecture  
+### Déploiement pour la Deuxième Architecture  
 
 Dans cette architecture, la fonction est déclenchée par un événement dans un bucket Google Cloud Storage.
 
@@ -160,23 +137,58 @@ gcloud functions deploy process-files \
 - La région `europe-west9` peut être ajustée en fonction de vos besoins.
 - Le script `process_files` doit être conçu pour entraîner ou mettre à jour le modèle en fonction des nouvelles données détectées dans le bucket.
 
-#### Conclusion
+### Conclusion
 Les deux architectures de déploiement permettent de gérer efficacement les recommandations en fonction de vos besoins :
 
 1. **Première Architecture** : Utilise une fonction HTTP pour fournir des recommandations pré-calculées à la demande, idéale pour des cas d'usage simples où la rapidité et la simplicité sont prioritaires.
 2. **Deuxième Architecture** : Permet une mise à jour automatique des recommandations via un pipeline déclenché par des événements dans un bucket Google Cloud Storage, parfait pour des applications dynamiques nécessitant des mises à jour fréquentes du modèle.
 
-Dans les deux cas, assurez-vous que votre configuration Google Cloud, y compris les services et permissions, soit correctement définie pour permettre une communication fluide entre vos composants.
+Dans les deux cas, assurez-vous que votre configuration Google Cloud, y compris les services et les autorisations, soit correctement définie pour garantir une interaction sans problème entre les services Google associés.
 
-### Dépôt des Fichiers
+
+## Utilisation : Exécution locale de l'application Streamlit
+
+### Prérequis pour faire tourner l'application Streamlit
+
+Avant de lancer l'application, assurez-vous que les éléments suivants sont installés :
+
+- **Python 3.10+** : L'application Streamlit nécessite Python 3.10 ou une version supérieure.
+- **Streamlit** : Utilisé pour la création de l'interface utilisateur.
+- **Bibliothèques Python** : Toutes les bibliothèques nécessaires sont listées dans le fichier `requirements.txt`.
+
+### Installation des dépendances
+
+1. Créez un environnement virtuel Python :
+   ```bash
+   python -m venv env
+   source env/bin/activate  # Sur Windows : env\Scripts\activate
+   ```
+2. Installez les dépendances nécessaires :
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+### Lancer l'application Streamlit
+
+   ```bash
+   streamlit run app.py
+   ```
+   Ouvrez votre navigateur à l'URL affichée (généralement http://localhost:8501).
+
+2. Ouvrez votre navigateur à l'URL affichée (généralement http://localhost:8501).
+
+
+3. Saisissez un ID utilisateur dans le champ prévu et cliquez sur "Obtenir des recommandations".
+
+## Dépôt des Fichiers
 
 - `app.py` : Script principal de l'application Streamlit.
 - `main.py` : Code de la Google Cloud Function.
-- `requirements.txt` : Dépendances Python nécessaires.
+- `requirements.txt` : Dépendances Python nécessaires pour lancer l'interface graphique Streamlit.
 - `data/` : Exemple de données utilisateur et articles (non inclus pour confidentialité).
 - `README.md` : Documentation du projet (ce fichier).
 
-### Licence
+## Licence
 
 Ce projet est distribué sous la licence MIT. Veuillez consulter le fichier `LICENSE` pour plus d'informations.
 
