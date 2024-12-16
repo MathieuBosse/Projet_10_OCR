@@ -1,7 +1,7 @@
+streamlit
 numpy
 pandas
-matplotlib
-progressbar2
-scikit-surprise
-scikit-learn
-pickle-mixin
+requests
+flask
+functions-framework
+gunicors
