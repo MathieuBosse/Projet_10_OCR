@@ -104,30 +104,69 @@ L'interface utilisateur est simple et intuitive, développée avec Streamlit pou
 
 ### Déploiement de la Google Cloud Function
 
+#### Activer les API nécessaires 
+
+```bash
+gcloud services enable cloudfunctions.googleapis.com
+gcloud services enable artifactregistry.googleapis.com
+gcloud services enable run.googleapis.com cloudbuild.googleapis.com
+```
+
+#### Déploiement pour la Première Architecture  
+Les recommandations sont pré-calculées et stockées dans Google Cloud Storage.  
+Une Google Cloud Function récupère ces données à la demande et les renvoie à l'application Streamlit via HTTP.  
+Voir la description complète.
+
 Placez les fichiers nécessaires dans un répertoire (par exemple : `main.py`, `requirements.txt`, données).
 
 Déployez la fonction :
 
 ```bash
-gcloud functions deploy [NOM_FONCTION] \
+gcloud functions deploy function-ocr \
     --runtime python310 \
     --trigger-http \
-    --entry-point [NOM_POINT_ENTREE]
+    --allow-unauthenticated \
+    --source . \
+    --entry-point function_ocr
 ```
 
 Utilisez l'URL générée pour interagir avec l'API.
 
-### Architecture
+**Remarques :**
+- La fonction sera accessible via une URL HTTP générée automatiquement après le déploiement.
+- Le script `function_ocr` doit être adapté pour récupérer les données pré-calculées stockées dans Google Cloud Storage.
 
-#### Première Architecture
-Les recommandations sont pré-calculées et stockées dans Google Cloud Storage.  
-Une Google Cloud Function récupère ces données à la demande et les renvoie à l'application Streamlit via HTTP.  
-Voir la description complète.
 
-#### Deuxième Architecture
-Les modifications dans le bucket GCP déclenchent un pipeline qui entraîne ou met à jour le modèle de recommandation.  
-Les résultats sont sauvegardés dans le bucket pour un accès futur.  
-Voir la description complète.
+#### Déploiement pour la Deuxième Architecture  
+
+Dans cette architecture, la fonction est déclenchée par un événement dans un bucket Google Cloud Storage.
+
+Assurez-vous que le bucket de stockage et la fonction sont situés dans la même région.
+
+Utilisez la commande suivante :
+
+```bash
+gcloud functions deploy process-files \
+    --runtime python310 \
+    --trigger-resource [BUCKET_NAME] \
+    --trigger-event google.storage.object.finalize \
+    --entry-point process_files \
+    --memory 512MB \
+    --region europe-west9 \
+    --allow-unauthenticated
+```
+**Remarques :**
+- Remplacez `[BUCKET_NAME]` par le nom de votre bucket Google Cloud Storage.
+- La région `europe-west9` peut être ajustée en fonction de vos besoins.
+- Le script `process_files` doit être conçu pour entraîner ou mettre à jour le modèle en fonction des nouvelles données détectées dans le bucket.
+
+#### Conclusion
+Les deux architectures de déploiement permettent de gérer efficacement les recommandations en fonction de vos besoins :
+
+1. **Première Architecture** : Utilise une fonction HTTP pour fournir des recommandations pré-calculées à la demande, idéale pour des cas d'usage simples où la rapidité et la simplicité sont prioritaires.
+2. **Deuxième Architecture** : Permet une mise à jour automatique des recommandations via un pipeline déclenché par des événements dans un bucket Google Cloud Storage, parfait pour des applications dynamiques nécessitant des mises à jour fréquentes du modèle.
+
+Dans les deux cas, assurez-vous que votre configuration Google Cloud, y compris les services et permissions, soit correctement définie pour permettre une communication fluide entre vos composants.
 
 ### Dépôt des Fichiers
 
