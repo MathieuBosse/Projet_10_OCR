@@ -7,6 +7,9 @@ from google.cloud import storage
 import os
 import json
 
+# Récupérer le nom du bucket depuis une variable d'environnement
+bucket_name = os.getenv('BUCKET_NAME', 'default_bucket_name')
+
 # Initialiser le client Google Cloud Storage
 storage_client = storage.Client()
 
@@ -35,8 +38,9 @@ def get_top_n(predictions, n=5):
     return top_n
 
 def process_files(event, context):
-    # Configuration des noms de bucket et des fichiers
-    bucket_name = 'my-data-bucket-architecture-n2'  # Remplacez par le nom de votre bucket
+
+    # Récupérer le nom du bucket depuis une variable d'environnement
+    bucket_name = os.getenv('BUCKET_NAME', 'default_bucket_name')    
     clicks_file = 'clicks.csv'
     articles_metadata_file = 'articles_metadata.csv'
     model_file = 'svd_model.pkl'  # Nom du fichier pour le modèle
