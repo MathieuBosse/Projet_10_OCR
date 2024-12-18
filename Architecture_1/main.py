@@ -1,5 +1,6 @@
 import pickle
 import json
+from datetime import datetime  # Import pour ajouter un horodatage
 
 # Charge les données de recommandations au démarrage de la fonction
 with open("top_n_final.txt", "rb") as fp:
@@ -20,7 +21,11 @@ def function_ocr(request):
                     {"category_id": category_id, "estimated_rating": estimated_rating}
                     for category_id, estimated_rating in top_n[user_id]
                 ]
-                return json.dumps({"user_id": user_id, "recommendations": recommendations}), 200, {'Content-Type': 'application/json'}
+                # Ajout d'un horodatage dans la réponse
+                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                return json.dumps({"user_id": user_id, 
+                                   "recommendations": recommendations, 
+                                   "timestamp": timestamp}), 200, {'Content-Type': 'application/json'}
             else:
                 return json.dumps({"error": "User ID not found"}), 404, {'Content-Type': 'application/json'}
         else:
